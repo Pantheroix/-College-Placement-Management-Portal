@@ -1,50 +1,54 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import NoteContext from "../context/notes/NoteContext";
+import { auth, db } from "../../services/firebase"; // Import Firebase services
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 const Login = (props) => {
   let navigate = useNavigate();
-  const [Credentials, SetCredentials] = useState({
+  const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
 
-  const HandleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/auth/LogUser", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        Email: Credentials.email,
-        Passwd: Credentials.password,
-      }),
-    });
-    const result = await response.json();
-    console.log(result);
-    if (result.success) {
-      localStorage.setItem("Role", result.Role);
-      localStorage.setItem("token", result.authToken);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
+      const user = userCredential.user;
 
-      let Role = localStorage.getItem("Role", result.Role);
-      if (Role === "Student") {
-        navigate("/Studentdas");
-      } else if (Role === "Admin") {
-        navigate("/Admindas");
-      } else if (Role === "HOD") {
-        navigate("/Hoddas");
+      // Get user role from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const role = userData.role;
+
+        // Redirect based on role
+        if (role === "student") {
+          navigate("/student/dashboard");
+        } else if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (role === "hod") {
+          navigate("/hod/dashboard");
+        } else {
+          navigate("/");
+        }
+        // props.showAlert("Login Successful", "success");
       } else {
-        navigate("/");
+        // props.showAlert("User role not found", "danger");
       }
-      props.showAlert("Login Successfull", "success");
-    } else {
-      props.showAlert("Invalide Credentials", "danger");
+    } catch (error) {
+      console.error("Error logging in:", error);
+      // props.showAlert("Invalid Credentials", "danger");
     }
   };
+
   const handleChange = (e) => {
-    SetCredentials({ ...Credentials, [e.target.name]: e.target.value });
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
@@ -54,7 +58,7 @@ const Login = (props) => {
         style={{ maxWidth: "500px", backgroundColor: "rgb(141, 235, 213)" }}
       >
         <h3 className="my-3 align-self-center ">Welcome Back!</h3>
-        <form onSubmit={HandleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
               <b>Email address</b>
@@ -85,12 +89,6 @@ const Login = (props) => {
               minLength={5}
               required
             />
-            <a
-              className="d-flex justify-content-end text-decoration-none text-dark "
-              href="/"
-            >
-              Forgot your password?
-            </a>
           </div>
           <button type="submit" className="btn btn-primary my-2">
             login
