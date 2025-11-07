@@ -1,7 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import "./StudentDas.css";
 
-export default function Studentdas() {
+const StudentDashboard = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // Fetch data from a mock API
+    const fetchData = async () => {
+      const mockData = {
+        activeDrives: [
+          { id: 1, company: 'Company A', title: 'Software Engineer' },
+          { id: 2, company: 'Company B', title: 'Data Analyst' },
+          { id: 3, company: 'Company C', title: 'Frontend Developer' },
+        ],
+        appliedDrives: [
+          { id: 1, company: 'Company A', status: 'Applied' },
+          { id: 2, company: 'Company B', status: 'Under Review' },
+        ],
+        upcomingRounds: [
+          { id: 1, company: 'Company A', round: 'Technical Interview', date: '24th July 2024' },
+          { id: 2, company: 'Company B', round: 'HR Round', date: '28th July 2024' },
+        ],
+        notifications: [
+          { id: 1, message: 'Your application for Company A has been shortlisted.' },
+          { id: 2, message: 'New placement drive added: Company D.' },
+        ],
+      };
+      setData(mockData);
+    };
+
+    fetchData();
+  }, []);
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="container-fluid student-dashboard">
       <div className="row">
@@ -18,11 +53,11 @@ export default function Studentdas() {
                 </div>
                 <div className="card-body">
                   <ul className="list-unstyled mt-3 mb-4">
-                    <li>Company A - Software Engineer</li>
-                    <li>Company B - Data Analyst</li>
-                    <li>Company C - Frontend Developer</li>
+                    {data.activeDrives.map((drive) => (
+                      <li key={drive.id}>{drive.company} - {drive.title}</li>
+                    ))}
                   </ul>
-                  <button type="button" className="btn btn-lg btn-block btn-outline-primary">View all drives</button>
+                  <Link to="/placement-drives" className="btn btn-lg btn-block btn-outline-primary">View all drives</Link>
                 </div>
               </div>
             </div>
@@ -33,8 +68,9 @@ export default function Studentdas() {
                 </div>
                 <div className="card-body">
                   <ul className="list-unstyled mt-3 mb-4">
-                    <li>Company A - Applied</li>
-                    <li>Company B - Under Review</li>
+                    {data.appliedDrives.map((drive) => (
+                      <li key={drive.id}>{drive.company} - {drive.status}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -49,8 +85,9 @@ export default function Studentdas() {
                 </div>
                 <div className="card-body">
                   <ul className="list-unstyled mt-3 mb-4">
-                    <li>Company A - Technical Interview - 24th July 2024</li>
-                    <li>Company B - HR Round - 28th July 2024</li>
+                    {data.upcomingRounds.map((round) => (
+                      <li key={round.id}>{round.company} - {round.round} - {round.date}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -62,8 +99,9 @@ export default function Studentdas() {
                 </div>
                 <div className="card-body">
                   <ul className="list-unstyled mt-3 mb-4">
-                    <li>Your application for Company A has been shortlisted.</li>
-                    <li>New placement drive added: Company D.</li>
+                    {data.notifications.map((notification) => (
+                      <li key={notification.id}>{notification.message}</li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -73,4 +111,6 @@ export default function Studentdas() {
       </div>
     </div>
   );
-}
+};
+
+export default StudentDashboard;
