@@ -3,12 +3,9 @@ import React, { useState, useEffect } from 'react';
 const HODDashboard = () => {
   const [data, setData] = useState(null);
   const [insight, setInsight] = useState('');
-  const [announcement, setAnnouncement] = useState('');
-  const [announcements, setAnnouncements] = useState([
-    'Upcoming placement drive by Company G on 1st August 2024.',
-  ]);
 
   useEffect(() => {
+    // Fetch data from a mock API
     const fetchData = async () => {
       const mockData = {
         placedStudents: 90,
@@ -32,15 +29,9 @@ const HODDashboard = () => {
   }, []);
 
   const generateInsight = () => {
+    // In a real application, you would make an API call to a Gemini AI model.
+    // For this example, we'll just use a sample insight.
     setInsight('The top-performing students in your department are excelling in interviews with tech companies. Consider offering more mock interviews to other students.');
-  };
-
-  const handleAnnouncementSubmit = (e) => {
-    e.preventDefault();
-    console.log('New Announcement:', announcement);
-    setAnnouncements([...announcements, announcement]);
-    setAnnouncement('');
-    alert('Announcement posted successfully!');
   };
 
   if (!data) {
@@ -48,67 +39,83 @@ const HODDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-800">HOD Panel</h1>
-        </div>
-        <nav className="mt-6">
-          <a href="#" className="block px-6 py-2 text-gray-600 hover:bg-gray-200">Dashboard</a>
-        </nav>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold text-gray-800">Department Dashboard</h1>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Placed Students</h2>
-            <p className="text-3xl font-bold text-green-500 mt-2">{data.placedStudents}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Unplaced Students</h2>
-            <p className="text-3xl font-bold text-red-500 mt-2">{data.unplacedStudents}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Total Drives</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{data.totalDrives}</p>
-          </div>
-        </div>
-
-        {/* Announcements & AI Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Announcements</h2>
-            <ul className="mt-4">
-              {announcements.map((ann, index) => (
-                <li key={index} className="border-b py-2 text-gray-800">{ann}</li>
-              ))}
-            </ul>
-            <form onSubmit={handleAnnouncementSubmit} className="mt-4">
-              <textarea
-                className="w-full p-2 border border-gray-300 rounded-md"
-                rows="3"
-                value={announcement}
-                onChange={(e) => setAnnouncement(e.target.value)}
-                placeholder="Post a new announcement..."
-                required
-              ></textarea>
-              <button type="submit" className="mt-2 w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Post Announcement</button>
-            </form>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">AI Insights</h2>
-            <div className="mt-4">
-              <button onClick={generateInsight} className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Generate Insight</button>
-              {insight && <p className="mt-4 text-gray-600">{insight}</p>}
+    <div className="container mt-5">
+      <div className="row">
+        <div className="col-md-4">
+          <div className="card text-white bg-success mb-3">
+            <div className="card-header">Placed Students</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.placedStudents}</h5>
             </div>
           </div>
         </div>
+        <div className="col-md-4">
+          <div className="card text-white bg-danger mb-3">
+            <div className="card-header">Unplaced Students</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.unplacedStudents}</h5>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card text-white bg-info mb-3">
+            <div className="card-header">Total Drives</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.totalDrives}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="row mt-4">
+        <div className="col-md-6">
+          <h4>Placed Students</h4>
+          <ul className="list-group">
+            {data.placedStudentsList.map((student) => (
+              <li key={student.id} className="list-group-item">
+                {student.name} - {student.company}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="col-md-6">
+          <h4>Unplaced Students</h4>
+          <ul className="list-group">
+            {data.unplacedStudentsList.map((student) => (
+              <li key={student.id} className="list-group-item">
+                {student.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <h4>Announcements</h4>
+        <div className="card">
+          <div className="card-body">
+            <p>Upcoming placement drive by Company G on 1st August 2024.</p>
+            <form>
+              <div className="form-group">
+                <textarea className="form-control" rows="3"></textarea>
+              </div>
+              <button type="submit" className="btn btn-primary">Post Announcement</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="row mt-5">
+        <div className="col-md-12">
+          <h4>AI Analytics</h4>
+          <div className="card">
+            <div className="card-body">
+              <p>Click the button to generate AI-powered insights into your department's placement data.</p>
+              <button className="btn btn-primary" onClick={generateInsight}>Generate Insights</button>
+              {insight && <p className="mt-3"><strong>Insight:</strong> {insight}</p>}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
