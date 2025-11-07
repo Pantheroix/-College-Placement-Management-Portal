@@ -13,6 +13,8 @@ import ApplicationTracking from "./components/ApplicationTracking";
 import DepartmentPlacements from "./components/DepartmentPlacements";
 import CollegePlacements from "./components/CollegePlacements";
 import ManageStudents from "./components/ManageStudents";
+import ManageHODs from "./components/ManageHODs";
+import CreateDrive from "./components/CreateDrive";
 function App() {
   return (
     <>
@@ -31,6 +33,8 @@ function App() {
           <Route path="/department-placements" element={<DepartmentPlacements />} />
           <Route path="/college-placements" element={<CollegePlacements />} />
           <Route path="/manage-students" element={<ManageStudents />} />
+          <Route path="/manage-hods" element={<ManageHODs />} />
+          <Route path="/create-drive" element={<CreateDrive />} />
         </Routes>
       </Router>
     </>
