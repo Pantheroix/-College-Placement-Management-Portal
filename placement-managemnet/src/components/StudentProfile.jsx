@@ -1,7 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 export default function StudentProfile() {
+  const { user } = useContext(AuthContext);
   const [resume, setResume] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState({
+    name: 'John Doe',
+    email: user ? user.email : 'john.doe@example.com',
+    phone: '+1 234 567 890',
+    department: 'Computer Science',
+    skills: 'React, Node.js, MongoDB',
+  });
+  const [resumeName, setResumeName] = useState(null);
+
+  useEffect(() => {
+    const storedResumeName = localStorage.getItem('userResumeName');
+    if (storedResumeName) {
+      setResumeName(storedResumeName);
+    }
+  }, []);
 
   const handleFileChange = (e) => {
     setResume(e.target.files[0]);
@@ -9,11 +27,27 @@ export default function StudentProfile() {
 
   const handleUpload = () => {
     if (resume) {
-      console.log('Uploading resume:', resume.name);
-      // Implement actual upload logic here
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        localStorage.setItem('userResume', event.target.result);
+        localStorage.setItem('userResumeName', resume.name);
+        setResumeName(resume.name);
+        alert('Resume uploaded successfully!');
+        setResume(null); // Clear the file input
+      };
+      reader.readAsDataURL(resume);
     } else {
-      console.log('No resume selected');
+      alert('Please select a resume to upload.');
     }
+  };
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfile({ ...profile, [name]: value });
+  };
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -23,8 +57,8 @@ export default function StudentProfile() {
           <div className="card">
             <div className="card-body text-center">
               <img src="https://via.placeholder.com/150" className="rounded-circle mb-3" alt="student" />
-              <h3>John Doe</h3>
-              <p className="text-muted">Computer Science</p>
+              <h3>{profile.name}</h3>
+              <p className="text-muted">{profile.department}</p>
             </div>
           </div>
         </div>
@@ -34,34 +68,37 @@ export default function StudentProfile() {
               <h4>Profile Details</h4>
             </div>
             <div className="card-body">
-              <form>
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input type="text" className="form-control" value="John Doe" readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" className="form-control" value="john.doe@example.com" readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input type="text" className="form-control" value="+1 234 567 890" readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Department</label>
-                  <input type="text" className="form-control" value="Computer Science" readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Skills</label>
-                  <input type-="text" className="form-control" value="React, Node.js, MongoDB" readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Resume</label>
-                  <p><a href="#">view_resume.pdf</a></p>
-                  <input type="file" className="form-control-file" onChange={handleFileChange} />
-                </div>
-                <button type="button" className="btn btn-primary" onClick={handleUpload}>Edit Profile</button>
-              </form>
+              <div className="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" className="form-control" value={profile.name} onChange={handleProfileChange} readOnly={!isEditing} />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input type="email" name="email" className="form-control" value={profile.email} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone" className="form-control" value={profile.phone} onChange={handleProfileChange} readOnly={!isEditing} />
+              </div>
+              <div className="form-group">
+                <label>Department</label>
+                <input type="text" name="department" className="form-control" value={profile.department} onChange={handleProfileChange} readOnly={!isEditing} />
+              </div>
+              <div className="form-group">
+                <label>Skills</label>
+                <input type="text" name="skills" className="form-control" value={profile.skills} onChange={handleProfileChange} readOnly={!isEditing} />
+              </div>
+              <button type="button" className="btn btn-primary" onClick={toggleEdit}>{isEditing ? 'Save Profile' : 'Edit Profile'}</button>
+
+              <hr />
+
+              <h5>Manage Resume</h5>
+              <div className="form-group">
+                <label>Resume</label>
+                {resumeName && <p><a href={localStorage.getItem('userResume')} download={resumeName}>{resumeName}</a></p>}
+                <input type="file" className="form-control-file" onChange={handleFileChange} />
+              </div>
+              <button type="button" className="btn btn-success" onClick={handleUpload} disabled={!resume}>Upload Resume</button>
             </div>
           </div>
         </div>
