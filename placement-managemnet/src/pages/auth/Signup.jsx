@@ -1,53 +1,60 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth, db } from "../../services/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const Signup = (props) => {
   let navigate = useNavigate();
-  const [Credentials, SetCredentials] = useState({
+  const [credentials, setCredentials] = useState({
     role: "",
     email: "",
     password: "",
   });
-  const HandleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/auth/CreateUser", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        Role: Credentials.role,
-        Email: Credentials.email,
-        Passwd: Credentials.password,
-      }),
-    });
-    const result = await response.json();
-    console.log(result);
 
-    if (result.success) {
-      localStorage.setItem("token", result.authToken);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
+      const user = userCredential.user;
+
+      // Add user role to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        email: credentials.email,
+        role: credentials.role.toLowerCase(),
+      });
+
       navigate("/login");
-      props.showAlert("Account Created Successfully", "success");
-    } else if (result.error) {
-      props.showAlert("Email already registered.", "info");
-    } else {
-      props.showAlert("Error Occured", "danger");
+      console.log("Account Created Successfully");
+    } catch (error) {
+      console.error("Error creating account:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        console.log("Email already registered.")
+      } else {
+        console.log("Error Occured")
+      }
     }
   };
+
   const handleChange = (e) => {
-    SetCredentials({ ...Credentials, [e.target.name]: e.target.value });
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
+
   return (
     <div>
       <div
         className="container border rounded d-flex flex-column "
         style={{ maxWidth: "500px", backgroundColor: "rgb(141, 235, 213)" }}
       >
-        <h3 className="my-3 align-self-center ">Hello NewUser!</h3>
-        <form onSubmit={HandleSubmit}>
+        <h3 className="my-3 align-self-center ">Hello New User!</h3>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">
-              <b>Role</b>
+              <b>Role (student, hod, or admin)</b>
             </label>
             <input
               type="text"
@@ -90,11 +97,7 @@ const Signup = (props) => {
               required
             />
           </div>
-          <button
-            type="submit"
-            className="btn btn-primary my-2"
-            onSubmit={HandleSubmit}
-          >
+          <button type="submit" className="btn btn-primary my-2">
             Signup
           </button>
         </form>
