@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import YCJobs from './YCJobs';
 
 const AdminDashboard = () => {
   const [data, setData] = useState(null);
   const [insight, setInsight] = useState('');
 
   useEffect(() => {
+    // Fetch data from a mock API
     const fetchData = async () => {
       const mockData = {
         totalStudents: 1250,
@@ -26,6 +26,8 @@ const AdminDashboard = () => {
   }, []);
 
   const generateInsight = () => {
+    // In a real application, you would make an API call to a Gemini AI model.
+    // For this example, we'll just use a sample insight.
     setInsight('Based on the current data, the placement rate for Computer Science students is 15% higher than the average. Consider organizing more drives for other departments.');
   };
 
@@ -34,73 +36,73 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-800">Admin Panel</h1>
-        </div>
-        <nav className="mt-6">
-          <Link to="/manage-students" className="block px-6 py-2 text-gray-600 hover:bg-gray-200">Manage Students</Link>
-          <Link to="/manage-hods" className="block px-6 py-2 text-gray-600 hover:bg-gray-200">Manage HODs</Link>
-          <Link to="/create-drive" className="block px-6 py-2 text-gray-600 hover:bg-gray-200">Create Drive</Link>
-        </nav>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Total Students</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{data.totalStudents}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Total Placed</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{data.totalPlaced}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Total Drives</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{data.totalDrives}</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Departments</h2>
-            <p className="text-3xl font-bold text-gray-800 mt-2">{data.departments}</p>
-          </div>
-        </div>
-
-        {/* Recent Drives & AI Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">Recent Drives</h2>
-            <ul className="mt-4">
-              {data.recentDrives.map((drive) => (
-                <li key={drive.id} className="border-b py-2 flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold text-gray-800">{drive.company}</p>
-                    <p className="text-sm text-gray-600">{drive.title}</p>
-                  </div>
-                  <Link to={`/drive/${drive.id}`} className="text-blue-500 hover:underline">View</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold text-gray-600">AI Insights</h2>
-            <div className="mt-4">
-              <button onClick={generateInsight} className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Generate Insight</button>
-              {insight && <p className="mt-4 text-gray-600">{insight}</p>}
+    <div className="container mt-5">
+      <div className="row">
+        <div className="col-md-3">
+          <div className="card text-white bg-primary mb-3">
+            <div className="card-header">Total Students</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.totalStudents}</h5>
             </div>
           </div>
         </div>
-
-        {/* YC Jobs */}
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
-          <YCJobs />
+        <div className="col-md-3">
+          <div className="card text-white bg-success mb-3">
+            <div className="card-header">Total Placed</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.totalPlaced}</h5>
+            </div>
+          </div>
         </div>
+        <div className="col-md-3">
+          <div className="card text-white bg-warning mb-3">
+            <div className="card-header">Total Drives</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.totalDrives}</h5>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card text-white bg-info mb-3">
+            <div className="card-header">Departments</div>
+            <div className="card-body">
+              <h5 className="card-title">{data.departments}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="row mt-4">
+        <div className="col-md-8">
+          <h4>Recent Drives</h4>
+          <ul className="list-group">
+            {data.recentDrives.map((drive) => (
+              <li key={drive.id} className="list-group-item">
+                {drive.company} - {drive.title}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="col-md-4">
+          <h4>Manage Accounts</h4>
+          <Link to="/manage-students" className="btn btn-primary btn-block">Manage Students</Link>
+          <Link to="/manage-hods" className="btn btn-secondary btn-block mt-2">Manage HODs</Link>
+          <Link to="/post-announcement" className="btn btn-info btn-block mt-2">Post Announcement</Link>
+		  <Link to="/create-drive" className="btn btn-success btn-block mt-2">Create Drive</Link>
+        </div>
+      </div>
+
+      <div className="row mt-5">
+        <div className="col-md-12">
+          <h4>AI Analytics</h4>
+          <div className="card">
+            <div className="card-body">
+              <p>Click the button to generate AI-powered insights into your placement data.</p>
+              <button className="btn btn-primary" onClick={generateInsight}>Generate Insights</button>
+              {insight && <p className="mt-3"><strong>Insight:</strong> {insight}</p>}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
