@@ -1,21 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function StudentProfile() {
-  const [resume, setResume] = useState(null);
-
-  const handleFileChange = (e) => {
-    setResume(e.target.files[0]);
-  };
-
-  const handleUpload = () => {
-    if (resume) {
-      console.log('Uploading resume:', resume.name);
-      // Implement actual upload logic here
-    } else {
-      console.log('No resume selected');
-    }
-  };
-
   return (
     <div className="container mt-5">
       <div className="row">
@@ -53,14 +38,14 @@ export default function StudentProfile() {
                 </div>
                 <div className="form-group">
                   <label>Skills</label>
-                  <input type-="text" className="form-control" value="React, Node.js, MongoDB" readOnly />
+                  <input type="text" className="form-control" value="React, Node.js, MongoDB" readOnly />
                 </div>
                 <div className="form-group">
                   <label>Resume</label>
                   <p><a href="#">view_resume.pdf</a></p>
-                  <input type="file" className="form-control-file" onChange={handleFileChange} />
+                  <input type="file" className="form-control-file" />
                 </div>
-                <button type="button" className="btn btn-primary" onClick={handleUpload}>Edit Profile</button>
+                <button type="button" className="btn btn-primary">Edit Profile</button>
               </form>
             </div>
           </div>
